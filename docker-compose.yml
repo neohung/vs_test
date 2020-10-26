@@ -1,0 +1,43 @@
+version: '3.7'
+services:
+  mymosquitto:
+    image: "eclipse-mosquitto"
+    container_name: "test-mosquitto"
+    restart: always
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+    volumes:
+      - ./my_mosquitto/data:/mosquitto/data
+      - ./my_mosquitto/log:/mosquitto/log
+      - ./my_mosquitto/config/mosquitto.conf:/mosquitto/config/mosquitto.conf
+      #- ./my_mosquitto/passwd:/mosquitto/passwd
+      - ./my_mosquitto/acl:/mosquitto/acl
+    command: mosquitto -c /mosquitto/config/mosquitto.conf
+  myredis:
+    image: "redis"
+    container_name: "test-redis"
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./my_db:/data
+    command:
+      #redis-server --requirepass ${REDIS_PASSWORD} --appendonly yes
+      redis-server --appendonly yes
+  myweb:
+    build: .
+    container_name: "test-web"
+    depends_on:
+      - myredis
+      - mymosquitto
+    ports:
+      - "5000:5000"
+      - "8000:80"
+    volumes:
+      - ./myflask:/codebase
+    links:
+      - "myredis:mydb"
+      - "mymosquitto:mymqtt"
+    environment:
+      MYAUTHTOKEN: "${MYAUTHTOKEN}"
