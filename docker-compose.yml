@@ -25,9 +25,10 @@ services:
     command:
       #redis-server --requirepass ${REDIS_PASSWORD} --appendonly yes
       redis-server --appendonly yes
-  myweb:
+  testweb:
     build: .
     container_name: "test-web"
+    restart: always
     depends_on:
       - myredis
       - mymosquitto
@@ -41,3 +42,16 @@ services:
       - "mymosquitto:mymqtt"
     environment:
       MYAUTHTOKEN: "${MYAUTHTOKEN}"
+  myngrok2:
+    container_name: test-ngrok2
+    image: wernight/ngrok
+    command: ngrok http myweb:80
+    ports:
+      - "4042:4040"
+    volumes:
+      - ./ngrok.yml:/home/ngrok/.ngrok2/ngrok.yml
+    links:
+      - "testweb:myweb"
+    depends_on:
+      - testweb
+
