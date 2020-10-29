@@ -1,13 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "bootstrap/base.html" %}
+{% import "bootstrap/utils.html" as utils %}
 
-<head>
-    <meta charset="UTF-8">
-    <title>Hello Page</title>
-</head>
+{% block title %}This is ABC page{% endblock %}
 
-<body>
-    You come {{visit_cnt}} times
-</body>
-
-</html>
+{% block content %}
+<h1>Hello, ABC, </h1>you visit {{visit_cnt}} times.
+{{utils.form_button(url_for('login_fn', id='toLogin'), utils.icon("pencil", ["large"]) + 'Click Me to Login', 'get')}}
+{% endblock %}

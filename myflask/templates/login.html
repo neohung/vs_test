@@ -1,0 +1,15 @@
+{% extends "bootstrap/base.html" %}
+
+{% block title %}Login page{% endblock %}
+
+{% block content %}
+<form method='post' action={{ url_for('login_fn') }}>
+    <p>
+        <input type='text' name='username' />
+        <input type='text' name='password' />
+    </p>
+    <p>
+        <button type='submit'>Submit</button>
+    </p>
+</form>
+{% endblock %}
