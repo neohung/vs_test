@@ -16,25 +16,28 @@ redis = Redis(host="mydb", port=6379)
 
 @app.route("/")
 def home():
-    bar = (
-        Bar()
-        .add_xaxis(["衬衫", "毛衣", "领带", "裤子", "风衣", "高跟鞋", "袜子"])
-        .add_yaxis("商家A", [random.randint(10, 100) for _ in range(7)])
-        .add_yaxis("商家B", [random.randint(10, 100) for _ in range(7)])
-        .set_global_opts(title_opts=opts.TitleOpts(title="某商场销售情况", subtitle="我是副标题"))
-    )
-    # bar.render()
-
     redis.incr("hits")
-    return Markup(bar.render_embed())
+    # return Markup(bar.render_embed())
     # return render_template("abc.html", visit_cnt=redis.get("hits").decode("utf8"))
-    # return "Hello , dfff %s times." % redis.get("hits")
+    return render_template("bar_pyecharts.html")
 
 
 @app.errorhandler(404)
 def page_not_found(e):
     flash(Markup("ERROR: <b>wrong</b> url"), "success")
     return render_template("404.html"), 404
+
+
+@app.route("/barChart")
+def get_bar_chart():
+    c = (
+        Bar()
+        .add_xaxis(["衬衫", "毛衣", "领带", "裤子", "风衣", "高跟鞋", "袜子"])
+        .add_yaxis("商家A", [random.randint(10, 100) for _ in range(7)])
+        .add_yaxis("商家B", [random.randint(10, 100) for _ in range(7)])
+        .set_global_opts(title_opts=opts.TitleOpts(title="某商场销售情况", subtitle="我是副标题"))
+    )
+    return c.dump_options_with_quotes()
 
 
 @app.route("/hello/<username>")
