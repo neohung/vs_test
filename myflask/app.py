@@ -4,6 +4,7 @@ from redis import Redis
 from flask import render_template, request, flash, redirect, url_for
 from flask_bootstrap import Bootstrap
 from markupsafe import Markup
+import random
 
 from pyecharts.charts import Bar
 from pyecharts import options as opts
@@ -18,8 +19,8 @@ def home():
     bar = (
         Bar()
         .add_xaxis(["衬衫", "毛衣", "领带", "裤子", "风衣", "高跟鞋", "袜子"])
-        .add_yaxis("商家A", [114, 55, 27, 101, 125, 27, 105])
-        .add_yaxis("商家B", [57, 134, 137, 129, 145, 60, 49])
+        .add_yaxis("商家A", [random.randint(10, 100) for _ in range(7)])
+        .add_yaxis("商家B", [random.randint(10, 100) for _ in range(7)])
         .set_global_opts(title_opts=opts.TitleOpts(title="某商场销售情况", subtitle="我是副标题"))
     )
     # bar.render()
