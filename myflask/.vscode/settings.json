@@ -5,5 +5,9 @@
     "editor.formatOnSave": true,
     "files.autoSave": "afterDelay",
     "files.autoSaveDelay": 5000,
-    "python.formatting.provider": "black"
+    "python.formatting.provider": "black",
+    "python.linting.flake8Path": "/home/neo/.local/bin/flake8",
+    "python.formatting.blackArgs": [
+        "--line-length=79"
+    ]
 }

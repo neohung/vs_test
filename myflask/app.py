@@ -17,9 +17,12 @@ redis = Redis(host="mydb", port=6379)
 @app.route("/")
 def home():
     redis.incr("hits")
+    # Should be ?bar_name=XXX&bar_stitle=YYY
+    data = request.args.to_dict()
     # return Markup(bar.render_embed())
-    # return render_template("abc.html", visit_cnt=redis.get("hits").decode("utf8"))
-    return render_template("bar_pyecharts.html")
+    # return render_template("abc.html", \
+    # visit_cnt=redis.get("hits").decode("utf8"))
+    return render_template("bar_pyecharts.html", args_json=data)
 
 
 @app.errorhandler(404)
@@ -30,12 +33,20 @@ def page_not_found(e):
 
 @app.route("/barChart")
 def get_bar_chart():
+    data = request.args.to_dict()
+    result = eval(data.get("result"))
+    bname = result.get("bar_name")
+    bsubtitle = result.get("bar_stitle")
     c = (
         Bar()
-        .add_xaxis(["衬衫", "毛衣", "领带", "裤子", "风衣", "高跟鞋", "袜子"])
-        .add_yaxis("商家A", [random.randint(10, 100) for _ in range(7)])
-        .add_yaxis("商家B", [random.randint(10, 100) for _ in range(7)])
-        .set_global_opts(title_opts=opts.TitleOpts(title="某商场销售情况", subtitle="我是副标题"))
+        .add_xaxis(
+            ["ITEM1", "ITEM2", "ITEM3", "ITEM4", "ITEM5", "ITEM6", "ITEM7"]
+        )
+        .add_yaxis("A", [random.randint(10, 100) for _ in range(7)])
+        .add_yaxis("B", [random.randint(10, 100) for _ in range(7)])
+        .set_global_opts(
+            title_opts=opts.TitleOpts(title=bname, subtitle=bsubtitle)
+        )
     )
     return c.dump_options_with_quotes()
 
@@ -50,7 +61,9 @@ def login_fn():
     if request.method == "POST":
         if login_check(request.form["username"], request.form["password"]):
             flash("Login Success!")
-            return redirect(url_for("hello", username=request.form.get("username")))
+            return redirect(
+                url_for("hello", username=request.form.get("username"))
+            )
     return render_template("login.html")
 
 
