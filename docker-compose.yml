@@ -41,6 +41,7 @@ services:
       - "myredis:mydb"
       - "mymosquitto:mymqtt"
     environment:
+      PYTHONUNBUFFERED: 1
       MYAUTHTOKEN: "${MYAUTHTOKEN}"
   myngrok2:
     container_name: test-ngrok2

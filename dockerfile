@@ -13,4 +13,4 @@ ADD ./myflask /codebase
 #ADD requirements.txt .
 WORKDIR /codebase
 RUN pip install -r requirements.txt
-CMD ["python", "app.py"]
+CMD ["python", "-u", "app.py"]

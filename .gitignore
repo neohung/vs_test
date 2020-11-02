@@ -6,3 +6,4 @@ my_mosquitto/log/mosquitto.log
 my_mosquitto/data/mosquitto.db
 my_mosquitto/passwd
 ngrok.yml
+*.csv
