@@ -5,13 +5,23 @@ from flask import render_template, request, flash, redirect, url_for
 from flask_bootstrap import Bootstrap
 from markupsafe import Markup
 import random
+from matplotlib import pyplot as plt
+from io import StringIO
+import base64
 
-from pyecharts.charts import Bar
-from pyecharts import options as opts
+# %matplotlib inline
 
 app = Flask(__name__)
 bootstrap = Bootstrap(app)
 redis = Redis(host="mydb", port=6379)
+
+html = """
+<html>
+    <body>
+        <img src="data:image/png;base64,{}" />
+    </body>
+</html>
+"""
 
 
 @app.route("/")
@@ -31,24 +41,30 @@ def page_not_found(e):
     return render_template("404.html"), 404
 
 
-@app.route("/barChart")
-def get_bar_chart():
-    data = request.args.to_dict()
-    result = eval(data.get("result"))
-    bname = result.get("bar_name")
-    bsubtitle = result.get("bar_stitle")
-    c = (
-        Bar()
-        .add_xaxis(
-            ["ITEM1", "ITEM2", "ITEM3", "ITEM4", "ITEM5", "ITEM6", "ITEM7"]
-        )
-        .add_yaxis("A", [random.randint(10, 100) for _ in range(7)])
-        .add_yaxis("B", [random.randint(10, 100) for _ in range(7)])
-        .set_global_opts(
-            title_opts=opts.TitleOpts(title=bname, subtitle=bsubtitle)
-        )
+@app.route("/plot")
+def plot():
+    fig = plt.figure(figsize=(9, 6))
+    left = [1, 2, 3, 4, 5]
+    # heights of bars
+    height = [random.randint(5, 50) for _ in range(5)]
+    # labels for bars
+    tick_label = ["one", "two", "three", "four", "five"]
+    # plotting a bar chart
+    plt.bar(
+        left, height, tick_label=tick_label, width=0.8, color=["red", "green"]
     )
-    return c.dump_options_with_quotes()
+    # naming the y-axis
+    plt.ylabel("y - axis")
+    # naming the x-axis
+    plt.xlabel("x - axis")
+    # plot title
+    plt.title("My bar chart!")
+    io = StringIO()
+    # plt.savefig("./plot.png")
+    fig.savefig(io, format="png")
+    data = base64.encodestring(io.getvalue())
+    return html.format(data)
+    # return render_template("plot.html", url="/static/images/plot.png")
 
 
 @app.route("/hello/<username>")
